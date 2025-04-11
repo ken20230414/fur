@@ -8,3 +8,4 @@ stripe==7.0.0
 gunicorn==21.2.0 
 qrcode==7.4.2 
 pillow==10.0.0 
+xmltodict==0.13.0  
