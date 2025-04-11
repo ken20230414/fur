@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>我的訂單</h2>
+    {% if orders %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>訂單編號</th>
+                        <th>日期</th>
+                        <th>商品</th>
+                        <th>數量</th>
+                        <th>總價</th>
+                        <th>狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>{{ order.product.name }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>${{ order.total_price }}</td>
+                        <td>
+                            {% if order.status == 'pending' %}
+                                <span class="badge bg-warning">待支付</span>
+                            {% elif order.status == 'paid' %}
+                                <span class="badge bg-success">已支付</span>
+                            {% elif order.status == 'shipped' %}
+                                <span class="badge bg-info">已發貨</span>
+                            {% elif order.status == 'delivered' %}
+                                <span class="badge bg-secondary">已送達</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('order_detail', order_id=order.id) }}" class="btn btn-sm btn-primary">查看詳情</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            您還沒有任何訂單。
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

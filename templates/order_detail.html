@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>訂單詳情</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">訂單信息</h5>
+                    <p><strong>訂單編號：</strong> {{ order.id }}</p>
+                    <p><strong>下單時間：</strong> {{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    <p><strong>支付時間：</strong> {{ order.payment_date.strftime('%Y-%m-%d %H:%M:%S') if order.payment_date else '未支付' }}</p>
+                    <p><strong>訂單狀態：</strong> 
+                        {% if order.status == 'pending' %}
+                            <span class="badge bg-warning">待支付</span>
+                        {% elif order.status == 'paid' %}
+                            <span class="badge bg-success">已支付</span>
+                        {% elif order.status == 'shipped' %}
+                            <span class="badge bg-info">已發貨</span>
+                        {% elif order.status == 'delivered' %}
+                            <span class="badge bg-secondary">已送達</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">商品信息</h5>
+                    <p><strong>商品名稱：</strong> {{ order.product.name }}</p>
+                    <p><strong>商品描述：</strong> {{ order.product.description }}</p>
+                    <p><strong>購買數量：</strong> {{ order.quantity }}</p>
+                    <p><strong>單價：</strong> ${{ order.product.price }}</p>
+                    <p><strong>總價：</strong> ${{ order.total_price }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <a href="{{ url_for('orders') }}" class="btn btn-secondary">返回訂單列表</a>
+        {% if order.status == 'pending' %}
+            <a href="{{ url_for('payment', order_id=order.id) }}" class="btn btn-primary">繼續支付</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
+{% endblock %} 

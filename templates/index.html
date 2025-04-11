@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1 class="text-center">歡迎來到家具商城</h1>
+        <p class="text-center">探索我們精選的家具系列</p>
+    </div>
+</div>
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description[:100] }}...</p>
+                <p class="card-text"><strong>價格：NT$ {{ product.price }}</strong></p>
+                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">查看詳情</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 

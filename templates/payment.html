@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>支付訂單</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">訂單詳情</h5>
+                    <p><strong>訂單編號：</strong> {{ order.id }}</p>
+                    <div class="mb-3">
+                        <strong>商品清單：</strong>
+                        <ul class="list-unstyled">
+                            {% for item in order.items %}
+                            <li class="mb-2">
+                                {{ item.product.name }} x {{ item.quantity }}
+                                <span class="text-muted">(${{ "%.2f"|format(item.price) }})</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <p><strong>總價：</strong> ${{ "%.2f"|format(order.total_price) }}</p>
+                    <p><strong>狀態：</strong> 
+                        {% if order.status == 'pending' %}
+                            <span class="badge bg-warning">待支付</span>
+                        {% elif order.status == 'processing' %}
+                            <span class="badge bg-info">處理中</span>
+                        {% elif order.status == 'completed' %}
+                            <span class="badge bg-success">已完成</span>
+                        {% elif order.status == 'cancelled' %}
+                            <span class="badge bg-danger">已取消</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">選擇支付方式</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="text-center mb-3">
+                                <h6>微信支付</h6>
+                                {% if wechat_qrcode_url %}
+                                    <img src="{{ wechat_qrcode_url }}" alt="微信支付二維碼" class="img-fluid">
+                                {% else %}
+                                    <div class="alert alert-danger">無法生成微信支付二維碼</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-center mb-3">
+                                <h6>支付寶</h6>
+                                {% if alipay_qrcode_url %}
+                                    <img src="{{ alipay_qrcode_url }}" alt="支付寶二維碼" class="img-fluid">
+                                {% else %}
+                                    <div class="alert alert-danger">無法生成支付寶二維碼</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button id="checkPayment" class="btn btn-primary">檢查支付狀態</button>
+                        <a href="{{ url_for('payment_cancel', order_id=order.id) }}" class="btn btn-danger">取消訂單</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('checkPayment').addEventListener('click', function() {
+    fetch(`/check_payment_status/{{ order.id }}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.href = '/payment_success?order_id={{ order.id }}';
+            } else {
+                alert('支付尚未完成，請繼續支付');
+            }
+        });
+});
+</script>
+{% endblock %} 

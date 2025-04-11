@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">購物車</h1>
+    
+    {% if cart_items %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>商品</th>
+                    <th>單價</th>
+                    <th>數量</th>
+                    <th>小計</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" class="img-thumbnail me-3" style="width: 100px;">
+                            <div>
+                                <h5 class="mb-1">{{ item.product.name }}</h5>
+                                <p class="text-muted mb-0">{{ item.product.description }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>NT$ {{ item.product.price }}</td>
+                    <td>
+                        <form action="{{ url_for('update_cart', item_id=item.id) }}" method="POST" class="d-flex align-items-center">
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="form-control form-control-sm" style="width: 70px;">
+                            <button type="submit" class="btn btn-sm btn-outline-primary ms-2">更新</button>
+                        </form>
+                    </td>
+                    <td>NT$ {{ item.product.price * item.quantity }}</td>
+                    <td>
+                        <form action="{{ url_for('remove_from_cart', item_id=item.id) }}" method="POST">
+                            <button type="submit" class="btn btn-danger btn-sm">移除</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">繼續購物</a>
+        </div>
+        <div class="col-md-6 text-end">
+            <h4>總計：NT$ {{ total }}</h4>
+            <form action="{{ url_for('checkout') }}" method="POST">
+                <button type="submit" class="btn btn-primary btn-lg">結帳</button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        購物車是空的，<a href="{{ url_for('index') }}">去購物</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
